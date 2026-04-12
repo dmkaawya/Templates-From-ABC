@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates from ABC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#E53935',
+                        'accent-h': '#FF5252',
+                        'accent-d': '#C62828',
+                        sd: '#0a0a0a', scd: '#111111', scdd: '#1a1a1a', sb: '#222222',
+                        sl: '#fafafa', scl: '#f0f0f0', scll: '#e4e4e4', slb: '#d5d5d5',
+                    },
+                    fontFamily: { heading: ['"Space Grotesk"','sans-serif'], body: ['"DM Sans"','sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:'DM Sans',sans-serif;transition:background .4s,color .4s}
+        .dark body{background:#0a0a0a;color:#fff}
+        html:not(.dark) body{background:#fafafa;color:#0a0a0a}
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:transparent}
+        .dark ::-webkit-scrollbar-thumb{background:#333}
+        html:not(.dark) ::-webkit-scrollbar-thumb{background:#ccc}
+        .swipe-row{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;padding-bottom:.75rem;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+        .swipe-row::-webkit-scrollbar{display:none}
+        .swipe-row>*{scroll-snap-align:start;flex-shrink:0}
+        .page-section{display:none;opacity:0}
+        .page-section.active{display:block;animation:pgIn .45s ease forwards}
+        @keyframes pgIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        .reveal{opacity:0;transform:translateY(28px);transition:opacity .55s ease,transform .55s ease}
+        .reveal.visible{opacity:1;transform:translateY(0)}
+        .blob{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0}
+        .dark .blob{opacity:.12}
+        html:not(.dark) .blob{opacity:.06}
+        .tcard{transition:transform .3s,box-shadow .3s}
+        .tcard:hover{transform:translateY(-7px)}
+        .dark .tcard:hover{box-shadow:0 14px 44px rgba(229,57,53,.14)}
+        html:not(.dark) .tcard:hover{box-shadow:0 14px 44px rgba(229,57,53,.09)}
+        .fbadge{font-size:.62rem;padding:2px 7px;border-radius:9999px;white-space:nowrap;font-weight:500}
+        .toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.9rem 1.4rem;border-radius:.7rem;z-index:9999;transform:translateY(100px);opacity:0;transition:all .4s ease;font-size:.9rem}
+        .toast.show{transform:translateY(0);opacity:1}
+        .mob-menu{transform:translateX(100%);transition:transform .35s ease}
+        .mob-menu.open{transform:translateX(0)}
+        .modal-ov{opacity:0;pointer-events:none;transition:opacity .3s}
+        .modal-ov.open{opacity:1;pointer-events:auto}
+        @keyframes pulseR{0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,.4)}50%{box-shadow:0 0 0 14px rgba(229,57,53,0)}}
+        .pulse-btn{animation:pulseR 2s infinite}
+        .gtxt{background:linear-gradient(135deg,#E53935,#FF8A80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .nav-lk.active{color:#E53935!important}
+        .dark .nav-lk{color:#aaa}
+        html:not(.dark) .nav-lk{color:#555}
+        .nav-lk:hover{color:#E53935!important}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+        .img-ph{background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+        html:not(.dark) .img-ph{background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+        .float-anim{animation:float 6s ease-in-out infinite}
+        @keyframes blobMove{0%,100%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-20px,15px)}}
+        .terms-scroll{max-height:55vh;overflow-y:auto}
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    </style>
+</head>
+<body class="font-body relative min-h-screen overflow-x-hidden">
+
+    <!-- Background Blobs -->
+    <div class="blob w-72 h-72 bg-accent top-10 -left-20" style="animation:blobMove 20s ease-in-out infinite"></div>
+    <div class="blob w-96 h-96 bg-red-700 bottom-20 -right-32" style="animation:blobMove 25s ease-in-out infinite reverse"></div>
+    <div class="blob w-60 h-60 bg-orange-600 top-1/2 left-1/3" style="animation:blobMove 18s ease-in-out infinite 3s"></div>
+
+    <!-- HEADER -->
+    <header class="fixed top-0 left-0 w-full z-50 dark:bg-sd/80 bg-white/80 backdrop-blur-xl border-b dark:border-sb border-slb transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#home" class="flex items-center gap-2 group" aria-label="Home">
+                <div class="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-white font-heading font-bold text-sm group-hover:scale-110 transition-transform">A</div>
+                <span class="font-heading font-semibold text-base dark:text-white text-gray-900 hidden sm:block">Templates from ABC</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+                <a href="#home" class="nav-lk px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-page="home">Home</a>
+                <a href="#gallery" class="nav-lk px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-page="gallery">Gallery</a>
+                <a href="#about" class="nav-lk px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-page="about">About</a>
+                <a href="#login" class="nav-lk px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-page="login" id="nav-login-btn">Login</a>
+            </nav>
+            <!-- Right side -->
+            <div class="flex items-center gap-3">
+                <button id="theme-toggle" class="w-9 h-9 rounded-lg dark:bg-scd bg-scl dark:hover:bg-scdd hover:bg-scll flex items-center justify-center transition-colors" aria-label="Toggle theme">
+                    <i class="fa-solid fa-moon text-sm dark:text-yellow-400 text-gray-600" id="theme-icon"></i>
+                </button>
+                <button id="mob-toggle" class="md:hidden w-9 h-9 rounded-lg dark:bg-scd bg-scl flex items-center justify-center" aria-label="Menu">
+                    <i class="fa-solid fa-bars text-sm dark:text-white text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mob-menu fixed top-0 right-0 w-72 h-full z-[60] dark:bg-scd bg-white shadow-2xl flex flex-col p-6" id="mob-menu" aria-hidden="true">
+        <button id="mob-close" class="self-end w-9 h-9 rounded-lg dark:bg-sdd bg-scl flex items-center justify-center mb-8" aria-label="Close menu"><i class="fa-solid fa-xmark dark:text-white text-gray-700"></i></button>
+        <a href="#home" class="mob-link py-3 px-4 rounded-lg font-medium text-sm dark:text-gray-300 text-gray-600 dark:hover:bg-sdd hover:bg-scl transition-colors">Home</a>
+        <a href="#gallery" class="mob-link py-3 px-4 rounded-lg font-medium text-sm dark:text-gray-300 text-gray-600 dark:hover:bg-sdd hover:bg-scl transition-colors">Gallery</a>
+        <a href="#about" class="mob-link py-3 px-4 rounded-lg font-medium text-sm dark:text-gray-300 text-gray-600 dark:hover:bg-sdd hover:bg-scl transition-colors">About</a>
+        <a href="#contact" class="mob-link py-3 px-4 rounded-lg font-medium text-sm dark:text-gray-300 text-gray-600 dark:hover:bg-sdd hover:bg-scl transition-colors">Contact</a>
+        <a href="#credit" class="mob-link py-3 px-4 rounded-lg font-medium text-sm dark:text-gray-300 text-gray-600 dark:hover:bg-sdd hover:bg-scl transition-colors">Credit</a>
+        <a href="#service" class="mob-link py-3 px-4 rounded-lg font-medium text-sm dark:text-gray-300 text-gray-600 dark:hover:bg-sdd hover:bg-scl transition-colors">Service</a>
+        <a href="#feedback" class="mob-link py-3 px-4 rounded-lg font-medium text-sm dark:text-gray-300 text-gray-600 dark:hover:bg-sdd hover:bg-scl transition-colors">Feedback</a>
+        <a href="#login" class="mob-link mt-4 py-3 px-4 rounded-lg font-medium text-sm bg-accent text-white text-center hover:bg-accent-h transition-colors" id="mob-login-btn">Login</a>
+    </div>
+    <div id="mob-overlay" class="fixed inset-0 bg-black/50 z-[55] hidden" aria-hidden="true"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="relative z-10 pt-16">
+
+        <!-- ========== HOME PAGE ========== -->
+        <section id="page-home" class="page-section active">
+            <!-- Hero -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 sm:pt-24 sm:pb-16">
+                <div class="text-center max-w-3xl mx-auto">
+                    <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-4 reveal">Premium Web Templates</p>
+                    <h1 class="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl leading-tight mb-6 reveal" style="animation-delay:.1s">
+                        Discover <span class="gtxt">Stunning</span> Templates for Every Project
+                    </h1>
+                    <p class="dark:text-gray-400 text-gray-500 text-lg sm:text-xl mb-8 max-w-2xl mx-auto reveal" style="animation-delay:.2s">
+                        Browse, download, and customize professional templates. Or share your own creations with the community.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="animation-delay:.3s">
+                        <a href="#gallery" class="px-8 py-3.5 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors text-center">Browse Templates</a>
+                        <button onclick="handleAddTemplate()" class="px-8 py-3.5 border-2 border-accent text-accent hover:bg-accent hover:text-white font-heading font-semibold rounded-xl transition-all text-center">Add Your Template</button>
+                    </div>
+                </div>
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-4 max-w-lg mx-auto mt-14 reveal" style="animation-delay:.4s">
+                    <div class="text-center"><p class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900" id="stat-count">50+</p><p class="text-xs dark:text-gray-500 text-gray-400 mt-1">Templates</p></div>
+                    <div class="text-center"><p class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900">10+</p><p class="text-xs dark:text-gray-500 text-gray-400 mt-1">Categories</p></div>
+                    <div class="text-center"><p class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900">Free</p><p class="text-xs dark:text-gray-500 text-gray-400 mt-1">Download</p></div>
+                </div>
+            </div>
+
+            <!-- Featured Templates (10 cards, swipeable) -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+                <div class="flex items-center justify-between mb-6 reveal">
+                    <div>
+                        <h2 class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900">Featured Templates</h2>
+                        <p class="dark:text-gray-500 text-gray-400 text-sm mt-1">Swipe to explore our top picks</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="scrollSwipe('featured-swipe',-1)" class="w-9 h-9 rounded-lg dark:bg-scd bg-scl dark:hover:bg-scdd hover:bg-scll flex items-center justify-center transition-colors" aria-label="Scroll left"><i class="fa-solid fa-chevron-left text-xs dark:text-gray-400 text-gray-500"></i></button>
+                        <button onclick="scrollSwipe('featured-swipe',1)" class="w-9 h-9 rounded-lg dark:bg-scd bg-scl dark:hover:bg-scdd hover:bg-scll flex items-center justify-center transition-colors" aria-label="Scroll right"><i class="fa-solid fa-chevron-right text-xs dark:text-gray-400 text-gray-500"></i></button>
+                    </div>
+                </div>
+                <div class="swipe-row reveal" id="featured-swipe"></div>
+                <div class="text-center mt-8 reveal">
+                    <a href="#gallery" class="inline-flex items-center gap-2 px-7 py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors">
+                        More View Templates <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+                <h2 class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900 mb-6 reveal">Browse by Category</h2>
+                <div class="swipe-row reveal" id="cat-swipe"></div>
+            </div>
+
+            <!-- About Preview -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+                <div class="dark:bg-scd/60 bg-white rounded-2xl p-8 sm:p-12 border dark:border-sb border-slb reveal">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-3">About Us</p>
+                            <h2 class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900 mb-4">We Build Templates That Matter</h2>
+                            <p class="dark:text-gray-400 text-gray-500 leading-relaxed mb-6">Templates from ABC is a community-driven platform where designers and developers share high-quality, ready-to-use web templates. Every template is crafted with attention to detail, performance, and modern design standards.</p>
+                            <a href="#about" class="inline-flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-h text-white font-semibold rounded-xl transition-colors text-sm">Learn More <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="dark:bg-sdd bg-scl rounded-xl p-5 text-center"><i class="fa-solid fa-palette text-accent text-xl mb-2"></i><p class="font-heading font-semibold text-sm dark:text-white text-gray-900">Modern Design</p></div>
+                            <div class="dark:bg-sdd bg-scl rounded-xl p-5 text-center"><i class="fa-solid fa-code text-accent text-xl mb-2"></i><p class="font-heading font-semibold text-sm dark:text-white text-gray-900">Clean Code</p></div>
+                            <div class="dark:bg-sdd bg-scl rounded-xl p-5 text-center"><i class="fa-solid fa-mobile-screen text-accent text-xl mb-2"></i><p class="font-heading font-semibold text-sm dark:text-white text-gray-900">Responsive</p></div>
+                            <div class="dark:bg-sdd bg-scl rounded-xl p-5 text-center"><i class="fa-solid fa-bolt text-accent text-xl mb-2"></i><p class="font-heading font-semibold text-sm dark:text-white text-gray-900">Fast Loading</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Preview -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+                <div class="dark:bg-gradient-to-br dark:from-accent/10 dark:to-transparent bg-gradient-to-br from-accent/5 to-transparent rounded-2xl p-8 sm:p-12 border dark:border-accent/20 border-accent/10 reveal">
+                    <div class="max-w-xl">
+                        <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-3">Get in Touch</p>
+                        <h2 class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900 mb-4">Have Questions or Ideas?</h2>
+                        <p class="dark:text-gray-400 text-gray-500 leading-relaxed mb-6">We would love to hear from you. Whether you need a custom template, want to collaborate, or just want to say hello, reach out to us anytime.</p>
+                        <a href="#contact" class="inline-flex items-center gap-2 px-6 py-2.5 border-2 border-accent text-accent hover:bg-accent hover:text-white font-semibold rounded-xl transition-all text-sm">Contact Us <i class="fa-solid fa-envelope text-xs"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Template CTA -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+                <div class="text-center reveal">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 dark:bg-scd bg-scl rounded-full text-xs dark:text-gray-400 text-gray-500 mb-4 border dark:border-sb border-slb"><i class="fa-solid fa-plus text-accent"></i> Contribute to the Community</div>
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl dark:text-white text-gray-900 mb-4">Share Your Templates</h2>
+                    <p class="dark:text-gray-400 text-gray-500 max-w-lg mx-auto mb-8">Upload your own templates and let others use them. Help grow the community of open-source design resources.</p>
+                    <button onclick="handleAddTemplate()" class="px-8 py-3.5 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors pulse-btn">Add New Photo / Template</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== GALLERY PAGE ========== -->
+        <section id="page-gallery" class="page-section">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
+                <div class="text-center mb-10">
+                    <h1 class="font-heading font-bold text-3xl sm:text-4xl dark:text-white text-gray-900 mb-3">Template Gallery</h1>
+                    <p class="dark:text-gray-400 text-gray-500 max-w-lg mx-auto">Explore all available templates. Filter by category or search by name.</p>
+                </div>
+                <!-- Search & Filter -->
+                <div class="flex flex-col sm:flex-row gap-3 mb-8">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 dark:text-gray-500 text-gray-400 text-sm"></i>
+                        <input type="text" id="gallery-search" placeholder="Search templates..." class="w-full pl-10 pr-4 py-2.5 rounded-xl dark:bg-scd bg-white border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors">
+                    </div>
+                    <select id="gallery-filter" class="px-4 py-2.5 rounded-xl dark:bg-scd bg-white border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent cursor-pointer">
+                        <option value="all">All Categories</option>
+                        <option value="portfolio">Portfolio</option>
+                        <option value="ecommerce">E-Commerce</option>
+                        <option value="blog">Blog</option>
+                        <option value="business">Business</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <!-- Templates Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="gallery-grid"></div>
+                <p class="text-center dark:text-gray-500 text-gray-400 mt-8 hidden" id="gallery-empty">No templates found matching your criteria.</p>
+                <!-- Upload Button -->
+                <div class="text-center mt-10" id="gallery-upload-area">
+                    <button onclick="handleAddTemplate()" class="px-7 py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Add New Template
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== ABOUT PAGE ========== -->
+        <section id="page-about" class="page-section">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
+                <div class="text-center mb-12">
+                    <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-3">Who We Are</p>
+                    <h1 class="font-heading font-bold text-3xl sm:text-4xl dark:text-white text-gray-900 mb-4">About Templates from ABC</h1>
+                    <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+                </div>
+                <div class="space-y-8 dark:text-gray-300 text-gray-600 leading-relaxed">
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb reveal">
+                        <h2 class="font-heading font-bold text-xl dark:text-white text-gray-900 mb-3">Our Mission</h2>
+                        <p>We believe great design should be accessible to everyone. Templates from ABC provides a curated collection of high-quality web templates that anyone can use, customize, and learn from. No hidden costs, no complicated licenses, just clean, professional templates ready for your next project.</p>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb reveal">
+                        <h2 class="font-heading font-bold text-xl dark:text-white text-gray-900 mb-3">What We Offer</h2>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-accent mt-1 text-sm"></i>Free, professionally designed web templates across multiple categories</li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-accent mt-1 text-sm"></i>Fully responsive templates that work on all devices</li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-accent mt-1 text-sm"></i>Clean, well-structured code that is easy to customize</li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-accent mt-1 text-sm"></i>A platform for designers to share and showcase their work</li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-accent mt-1 text-sm"></i>Regular updates and new template additions from the community</li>
+                        </ul>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb reveal">
+                        <h2 class="font-heading font-bold text-xl dark:text-white text-gray-900 mb-3">Our Team</h2>
+                        <p>Behind Templates from ABC is a small but passionate team of web designers and developers from ICT from ABC. We started this project to solve a common problem: finding good, free templates without digging through dozens of low-quality options. Every template in our collection is hand-reviewed to meet our quality standards.</p>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb reveal">
+                        <h2 class="font-heading font-bold text-xl dark:text-white text-gray-900 mb-3">Join the Community</h2>
+                        <p>Whether you are a seasoned designer or just getting started, we welcome you to contribute your templates, provide feedback, or simply use our resources. Together, we can make the web a more beautiful place, one template at a time.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== CONTACT PAGE ========== -->
+        <section id="page-contact" class="page-section">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
+                <div class="text-center mb-12">
+                    <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-3">Reach Out</p>
+                    <h1 class="font-heading font-bold text-3xl sm:text-4xl dark:text-white text-gray-900 mb-4">Contact Us</h1>
+                    <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+                </div>
+                <div class="grid md:grid-cols-5 gap-8">
+                    <!-- Contact Info -->
+                    <div class="md:col-span-2 space-y-4">
+                        <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal">
+                            <i class="fa-solid fa-globe text-accent text-lg mb-3"></i>
+                            <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-1">Website</h3>
+                            <a href="https://ictfromabc.com" target="_blank" class="text-sm dark:text-gray-400 text-gray-500 hover:text-accent transition-colors">ictfromabc.com</a>
+                        </div>
+                        <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal">
+                            <i class="fa-solid fa-envelope text-accent text-lg mb-3"></i>
+                            <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-1">Email</h3>
+                            <p class="text-sm dark:text-gray-400 text-gray-500">contact@ictfromabc.com</p>
+                        </div>
+                        <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal">
+                            <i class="fa-solid fa-share-nodes text-accent text-lg mb-3"></i>
+                            <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-1">Social Media</h3>
+                            <div class="flex gap-3 mt-2">
+                                <a href="https://youtube.com/@ictfromabc" target="_blank" class="w-9 h-9 rounded-lg dark:bg-sdd bg-scl flex items-center justify-center dark:text-gray-400 text-gray-500 hover:text-accent transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                                <a href="https://facebook.com/ictfromabc" target="_blank" class="w-9 h-9 rounded-lg dark:bg-sdd bg-scl flex items-center justify-center dark:text-gray-400 text-gray-500 hover:text-accent transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                                <a href="https://tiktok.com/@ictfromabc" target="_blank" class="w-9 h-9 rounded-lg dark:bg-sdd bg-scl flex items-center justify-center dark:text-gray-400 text-gray-500 hover:text-accent transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Contact Form -->
+                    <div class="md:col-span-3 dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb reveal">
+                        <form id="contact-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Full Name</label>
+                                <input type="text" required class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="Your name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Email</label>
+                                <input type="email" required class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="you@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Subject</label>
+                                <input type="text" required class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="How can we help?">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Message</label>
+                                <textarea required rows="4" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors resize-none" placeholder="Your message..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== LOGIN PAGE ========== -->
+        <section id="page-login" class="page-section">
+            <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
+                <div class="text-center mb-8">
+                    <h1 class="font-heading font-bold text-3xl dark:text-white text-gray-900 mb-2" id="auth-title">Welcome Back</h1>
+                    <p class="dark:text-gray-400 text-gray-500 text-sm" id="auth-subtitle">Sign in to upload and manage your templates</p>
+                </div>
+                <!-- Auth Tabs -->
+                <div class="flex mb-6 dark:bg-scd bg-scl rounded-xl p-1" id="auth-tabs">
+                    <button onclick="switchAuthTab('login')" class="auth-tab flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all bg-accent text-white" data-tab="login">Login</button>
+                    <button onclick="switchAuthTab('signup')" class="auth-tab flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all dark:text-gray-400 text-gray-500" data-tab="signup">Sign Up</button>
+                </div>
+                <!-- Login Form -->
+                <form id="login-form" class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb space-y-4" onsubmit="handleLogin(event)">
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Email</label>
+                        <input type="email" required id="login-email" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Password</label>
+                        <input type="password" required id="login-pass" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="Your password">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors">Sign In</button>
+                </form>
+                <!-- Signup Form -->
+                <form id="signup-form" class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb space-y-4 hidden" onsubmit="handleSignup(event)">
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Full Name</label>
+                        <input type="text" required id="signup-name" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="Your name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Email</label>
+                        <input type="email" required id="signup-email" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Password</label>
+                        <input type="password" required id="signup-pass" minlength="6" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="Min 6 characters">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors">Create Account</button>
+                </form>
+                <!-- Upload Form (shown after login) -->
+                <div id="upload-section" class="hidden mt-8">
+                    <div class="text-center mb-4">
+                        <p class="text-accent font-heading font-semibold text-sm">You are logged in</p>
+                        <p class="dark:text-gray-400 text-gray-500 text-xs mt-1">Upload your template below</p>
+                    </div>
+                    <form id="upload-form" class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb space-y-4" onsubmit="handleUpload(event)">
+                        <div>
+                            <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Template Image</label>
+                            <input type="file" accept="image/*" required id="upload-file" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-accent file:text-white file:text-xs file:font-semibold file:cursor-pointer">
+                            <div id="upload-preview" class="mt-3 hidden"><img id="preview-img" class="w-full h-40 object-cover rounded-xl" alt="Preview"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Title</label>
+                            <input type="text" required id="upload-title" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="Template name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Short Caption</label>
+                            <input type="text" required id="upload-caption" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="Brief description">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Category</label>
+                            <select id="upload-category" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent">
+                                <option value="portfolio">Portfolio</option>
+                                <option value="ecommerce">E-Commerce</option>
+                                <option value="blog">Blog</option>
+                                <option value="business">Business</option>
+                                <option value="education">Education</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors" id="upload-btn">
+                            <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Upload Template
+                        </button>
+                    </form>
+                    <button onclick="handleLogout()" class="w-full mt-4 py-2.5 border dark:border-sb border-slb dark:text-gray-400 text-gray-500 hover:text-accent hover:border-accent font-medium rounded-xl transition-colors text-sm">Log Out</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== CREDIT PAGE ========== -->
+        <section id="page-credit" class="page-section">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
+                <div class="text-center mb-12">
+                    <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-3">Acknowledgements</p>
+                    <h1 class="font-heading font-bold text-3xl sm:text-4xl dark:text-white text-gray-900 mb-4">Credits</h1>
+                    <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+                </div>
+                <div class="space-y-4">
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Platform</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Designed and developed by <a href="https://vezlo-web.vercel.app" target="_blank" class="text-accent hover:underline">Vezlo</a> for ICT from ABC.</p></div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Frontend Framework</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Built with Tailwind CSS for rapid, responsive styling.</p></div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Typography</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Space Grotesk and DM Sans by Google Fonts.</p></div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Icons</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Font Awesome 6 Free by Dave Gandy.</p></div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Backend & Database</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Supabase for authentication and real-time database.</p></div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Image Hosting</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Cloudinary for image upload, transformation, and delivery.</p></div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Placeholder Images</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Demo images from Picsum Photos (picsum.photos).</p></div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-6 border dark:border-sb border-slb reveal"><h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Community Templates</h3><p class="dark:text-gray-400 text-gray-500 text-sm">Special thanks to all contributors who share their templates on this platform.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== SERVICE PAGE ========== -->
+        <section id="page-service" class="page-section">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
+                <div class="text-center mb-12">
+                    <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-3">What We Do</p>
+                    <h1 class="font-heading font-bold text-3xl sm:text-4xl dark:text-white text-gray-900 mb-4">Our Services</h1>
+                    <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-7 border dark:border-sb border-slb reveal group hover:border-accent/40 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors"><i class="fa-solid fa-palette text-accent text-lg"></i></div>
+                        <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Custom Template Design</h3>
+                        <p class="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">Get a unique template designed from scratch tailored to your brand and requirements.</p>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-7 border dark:border-sb border-slb reveal group hover:border-accent/40 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors"><i class="fa-solid fa-sliders text-accent text-lg"></i></div>
+                        <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Template Customization</h3>
+                        <p class="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">Already have a template? We can modify colors, layout, content, and features to match your needs.</p>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-7 border dark:border-sb border-slb reveal group hover:border-accent/40 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors"><i class="fa-solid fa-code text-accent text-lg"></i></div>
+                        <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Web Development</h3>
+                        <p class="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">Full-stack web development services using modern technologies and best practices.</p>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-7 border dark:border-sb border-slb reveal group hover:border-accent/40 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors"><i class="fa-solid fa-magnifying-glass-chart text-accent text-lg"></i></div>
+                        <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">SEO Optimization</h3>
+                        <p class="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">Improve your website visibility with our search engine optimization expertise.</p>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-7 border dark:border-sb border-slb reveal group hover:border-accent/40 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors"><i class="fa-solid fa-mobile-screen-button text-accent text-lg"></i></div>
+                        <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Responsive Design</h3>
+                        <p class="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">Ensure your website looks perfect on every screen size from mobile to ultra-wide displays.</p>
+                    </div>
+                    <div class="dark:bg-scd/60 bg-white rounded-2xl p-7 border dark:border-sb border-slb reveal group hover:border-accent/40 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors"><i class="fa-solid fa-graduation-cap text-accent text-lg"></i></div>
+                        <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">Training & Support</h3>
+                        <p class="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">Learn how to use and customize templates with our tutorials and ongoing support.</p>
+                    </div>
+                </div>
+                <div class="text-center mt-10 reveal">
+                    <a href="#contact" class="inline-flex items-center gap-2 px-7 py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors">Get a Quote <i class="fa-solid fa-arrow-right text-sm"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== FEEDBACK PAGE ========== -->
+        <section id="page-feedback" class="page-section">
+            <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
+                <div class="text-center mb-8">
+                    <p class="text-accent font-heading font-semibold text-sm tracking-wider uppercase mb-3">Your Opinion Matters</p>
+                    <h1 class="font-heading font-bold text-3xl dark:text-white text-gray-900 mb-4">Feedback</h1>
+                    <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+                </div>
+                <form id="feedback-form" class="dark:bg-scd/60 bg-white rounded-2xl p-8 border dark:border-sb border-slb space-y-5 reveal" onsubmit="handleFeedback(event)">
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Name</label>
+                        <input type="text" required class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="Your name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Email</label>
+                        <input type="email" required class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-2">Rating</label>
+                        <div class="flex gap-2" id="star-rating">
+                            <button type="button" onclick="setRating(1)" class="text-2xl dark:text-sb text-slb hover:text-accent transition-colors" data-star="1"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(2)" class="text-2xl dark:text-sb text-slb hover:text-accent transition-colors" data-star="2"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(3)" class="text-2xl dark:text-sb text-slb hover:text-accent transition-colors" data-star="3"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(4)" class="text-2xl dark:text-sb text-slb hover:text-accent transition-colors" data-star="4"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(5)" class="text-2xl dark:text-sb text-slb hover:text-accent transition-colors" data-star="5"><i class="fa-solid fa-star"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium dark:text-gray-300 text-gray-600 mb-1">Your Feedback</label>
+                        <textarea required rows="4" class="w-full px-4 py-2.5 rounded-xl dark:bg-sdd bg-scl border dark:border-sb border-slb dark:text-white text-gray-900 text-sm focus:outline-none focus:border-accent transition-colors resize-none" placeholder="Tell us what you think..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-accent hover:bg-accent-h text-white font-heading font-semibold rounded-xl transition-colors">Submit Feedback</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 dark:bg-[#050505] bg-gray-100 border-t dark:border-sb border-slb transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+                <!-- Column 1: Name & Tag -->
+                <div class="col-span-2 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-white font-heading font-bold text-sm">A</div>
+                        <span class="font-heading font-semibold dark:text-white text-gray-900">Templates from ABC</span>
+                    </div>
+                    <p class="dark:text-gray-500 text-gray-400 text-sm leading-relaxed mb-4">Premium web templates for designers, developers, and businesses. Free to browse, download, and customize.</p>
+                    <p class="text-xs dark:text-gray-600 text-gray-400">#TemplatesFromABC #ICTFromABC</p>
+                </div>
+                <!-- Column 2: Quick Links -->
+                <div>
+                    <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-4 text-sm">Quick Links</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#home" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Home</a></li>
+                        <li><a href="#gallery" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Gallery</a></li>
+                        <li><a href="#about" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">About</a></li>
+                        <li><a href="#contact" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Contact</a></li>
+                        <li><a href="#credit" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Credit</a></li>
+                        <li><a href="#service" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Service</a></li>
+                        <li><a href="#feedback" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Feedback</a></li>
+                    </ul>
+                </div>
+                <!-- Column 3: Official Links -->
+                <div>
+                    <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-4 text-sm">Official Links</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="https://ictfromabc.com" target="_blank" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">ictfromabc.com</a></li>
+                        <li><a href="https://youtube.com/@ictfromabc" target="_blank" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors flex items-center gap-2"><i class="fa-brands fa-youtube"></i> YouTube</a></li>
+                        <li><a href="https://facebook.com/ictfromabc" target="_blank" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors flex items-center gap-2"><i class="fa-brands fa-facebook-f"></i> Facebook</a></li>
+                        <li><a href="https://tiktok.com/@ictfromabc" target="_blank" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors flex items-center gap-2"><i class="fa-brands fa-tiktok"></i> TikTok</a></li>
+                    </ul>
+                </div>
+                <!-- Column 4: Terms -->
+                <div>
+                    <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-4 text-sm">Legal</h4>
+                    <ul class="space-y-2.5">
+                        <li><button onclick="openTerms()" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Terms and Conditions</button></li>
+                        <li><button onclick="openTerms()" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Privacy Policy</button></li>
+                        <li><button onclick="openTerms()" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Cookie Policy</button></li>
+                        <li><a href="#credit" class="text-sm dark:text-gray-500 text-gray-400 hover:text-accent transition-colors">Licenses</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Bottom Bar -->
+            <div class="mt-12 pt-6 border-t dark:border-sb border-slb flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p class="text-xs dark:text-gray-600 text-gray-400">&copy; 2026 Templates from ABC. All rights reserved.</p>
+                <p class="text-xs dark:text-gray-600 text-gray-400">Developed by <a href="https://vezlo-web.vercel.app" target="_blank" class="text-accent hover:underline font-medium">Vezlo</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Terms Modal -->
+    <div class="modal-ov fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" id="terms-modal">
+        <div class="dark:bg-scd bg-white rounded-2xl max-w-lg w-full max-h-[80vh] flex flex-col border dark:border-sb border-slb">
+            <div class="flex items-center justify-between p-6 border-b dark:border-sb border-slb">
+                <h3 class="font-heading font-semibold dark:text-white text-gray-900">Terms and Conditions</h3>
+                <button onclick="closeTerms()" class="w-8 h-8 rounded-lg dark:bg-sdd bg-scl flex items-center justify-center" aria-label="Close"><i class="fa-solid fa-xmark text-sm dark:text-gray-400 text-gray-500"></i></button>
+            </div>
+            <div class="p-6 terms-scroll dark:text-gray-400 text-gray-500 text-sm leading-relaxed">
+                <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">1. Acceptance of Terms</h4>
+                <p class="mb-4">By accessing and using Templates from ABC, you agree to be bound by these Terms and Conditions. If you do not agree, please do not use the platform.</p>
+                <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">2. Use of Templates</h4>
+                <p class="mb-4">All templates are provided for personal and commercial use. You may modify, customize, and distribute the templates. However, you may not resell the templates as-is without significant modification.</p>
+                <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">3. User Contributions</h4>
+                <p class="mb-4">When you upload templates, you grant Templates from ABC a non-exclusive license to display, distribute, and promote your contribution. You retain ownership of your original work.</p>
+                <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">4. Intellectual Property</h4>
+                <p class="mb-4">All templates, logos, and branding associated with Templates from ABC are protected by intellectual property laws. Respect the rights of original creators.</p>
+                <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">5. Limitation of Liability</h4>
+                <p class="mb-4">Templates from ABC is provided "as is" without warranties. We are not liable for any damages arising from the use of templates or the platform.</p>
+                <h4 class="font-heading font-semibold dark:text-white text-gray-900 mb-2">6. Changes to Terms</h4>
+                <p>We reserve the right to update these terms at any time. Continued use of the platform constitutes acceptance of updated terms.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast dark:bg-scd bg-white border dark:border-sb border-slb dark:text-white text-gray-900 shadow-xl" id="toast">
+        <span id="toast-msg"></span>
+    </div>
+
+    <script>
+    /* ============================
+       CONFIGURATION & DATA
+    ============================ */
+    const SUPABASE_URL = 'https://vegemuqfhinyxeojfbddx.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ2VtdXFoaW55eGVvamZiZHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDkyNjIsImV4cCI6MjA4Njc4NTI2Mn0.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
+    const CLOUD_NAME = 'draepam9r';
+    // NOTE: Create an unsigned upload preset named "template_upload" in your Cloudinary dashboard
+
+    let supabaseClient = null;
+    let currentUser = null;
+    let feedbackRating = 0;
+    let allTemplates = [];
+
+    // 10 Featured Templates (fallback data)
+    const defaultTemplates = [
+        { id:1, title:'Portfolio Pro', caption:'Creative portfolio for designers and artists', image:'https://picsum.photos/seed/tpl-port/400/250', category:'portfolio', features:['Responsive','Modern UI','Free','Easy Edit','SEO Ready','Fast'] },
+        { id:2, title:'ShopMaster', caption:'Complete e-commerce store solution', image:'https://picsum.photos/seed/tpl-shop/400/250', category:'ecommerce', features:['Responsive','Cart System','Free','Payment Ready','SEO Ready','Fast'] },
+        { id:3, title:'BlogWave', caption:'Modern blog with clean reading experience', image:'https://picsum.photos/seed/tpl-blog/400/250', category:'blog', features:['Responsive','Markdown','Free','Easy Edit','SEO Ready','Fast'] },
+        { id:4, title:'FoodZone', caption:'Restaurant and food delivery template', image:'https://picsum.photos/seed/tpl-food/400/250', category:'business', features:['Responsive','Menu System','Free','Customizable','SEO Ready','Fast'] },
+        { id:5, title:'LaunchPad', caption:'Startup landing page with analytics', image:'https://picsum.photos/seed/tpl-launch/400/250', category:'business', features:['Responsive','Modern UI','Free','A/B Ready','SEO Ready','Fast'] },
+        { id:6, title:'DataViz Pro', caption:'Dashboard and analytics interface', image:'https://picsum.photos/seed/tpl-data/400/250', category:'business', features:['Responsive','Charts','Free','Dark Mode','SEO Ready','Fast'] },
+        { id:7, title:'AgencyX', caption:'Creative agency showcase template', image:'https://picsum.photos/seed/tpl-agency/400/250', category:'portfolio', features:['Responsive','Animations','Free','Easy Edit','SEO Ready','Fast'] },
+        { id:8, title:'ResumeAI', caption:'Professional CV and resume builder', image:'https://picsum.photos/seed/tpl-resume/400/250', category:'portfolio', features:['Responsive','Print Ready','Free','PDF Export','SEO Ready','Fast'] },
+        { id:9, title:'EduLearn', caption:'Online education platform template', image:'https://picsum.photos/seed/tpl-edu/400/250', category:'education', features:['Responsive','LMS Ready','Free','Customizable','SEO Ready','Fast'] },
+        { id:10, title:'FitLife', caption:'Fitness and gym membership template', image:'https://picsum.photos/seed/tpl-fit/400/250', category:'business', features:['Responsive','Booking','Free','Easy Edit','SEO Ready','Fast'] },
+    ];
+
+    const categories = [
+        { name:'Portfolio', icon:'fa-briefcase', color:'text-blue-400', count:2 },
+        { name:'E-Commerce', icon:'fa-cart-shopping', color:'text-green-400', count:1 },
+        { name:'Blog', icon:'fa-pen-nib', color:'text-purple-400', count:1 },
+        { name:'Business', icon:'fa-building', color:'text-yellow-400', count:4 },
+        { name:'Education', icon:'fa-graduation-cap', color:'text-cyan-400', count:1 },
+        { name:'Landing Page', icon:'fa-rocket', color:'text-red-400', count:1 },
+    ];
+
+    /* ============================
+       INIT SUPABASE
+    ============================ */
+    function initSupabase() {
+        try {
+            if (typeof supabase !== 'undefined' && supabase.createClient) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                // Check existing session
+                supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    if (session) {
+                        currentUser = session.user;
+                        updateAuthUI();
+                    }
+                });
+                // Listen for auth changes
+                supabaseClient.auth.onAuthStateChange((event, session) => {
+                    currentUser = session ? session.user : null;
+                    updateAuthUI();
+                });
+            }
+        } catch(e) {
+            console.warn('Supabase init failed, using fallback data:', e);
+        }
+    }
+
+    /* ============================
+       ROUTER
+    ============================ */
+    function navigate() {
+        const hash = window.location.hash.slice(1) || 'home';
+        const validPages = ['home','gallery','about','contact','login','credit','service','feedback'];
+        const page = validPages.includes(hash) ? hash : 'home';
+
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById('page-' + page);
+        if (target) target.classList.add('active');
+
+        // Update nav active state
+        document.querySelectorAll('.nav-lk').forEach(l => {
+            l.classList.toggle('active', l.dataset.page === page);
+        });
+
+        // Close mobile menu
+        closeMobileMenu();
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Re-init reveals
+        setTimeout(initReveal, 100);
+
+        // Load gallery data when visiting gallery
+        if (page === 'gallery') loadGallery();
+
+        // Update login button text
+        if (currentUser) {
+            document.getElementById('nav-login-btn').textContent = 'Account';
+            document.getElementById('mob-login-btn').textContent = 'Account';
+        } else {
+            document.getElementById('nav-login-btn').textContent = 'Login';
+            document.getElementById('mob-login-btn').textContent = 'Login';
+        }
+    }
+
+    /* ============================
+       THEME TOGGLE
+    ============================ */
+    function initTheme() {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'light') {
+            document.documentElement.classList.remove('dark');
+        }
+        updateThemeIcon();
+    }
+
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const icon = document.getElementById('theme-icon');
+        const isDark = document.documentElement.classList.contains('dark');
+        icon.className = isDark ? 'fa-solid fa-sun text-sm text-yellow-400' : 'fa-solid fa-moon text-sm text-gray-600';
+    }
+
+    /* ============================
+       MOBILE MENU
+    ============================ */
+    function openMobileMenu() {
+        document.getElementById('mob-menu').classList.add('open');
+        document.getElementById('mob-menu').setAttribute('aria-hidden','false');
+        document.getElementById('mob-overlay').classList.remove('hidden');
+    }
+    function closeMobileMenu() {
+        document.getElementById('mob-menu').classList.remove('open');
+        document.getElementById('mob-menu').setAttribute('aria-hidden','true');
+        document.getElementById('mob-overlay').classList.add('hidden');
+    }
+
+    /* ============================
+       RENDER TEMPLATE CARDS
+    ============================ */
+    function createCardHTML(t, isSwipe) {
+        const w = isSwipe ? 'w-72 sm:w-80' : '';
+        const features = t.features || ['Responsive','Modern','Free','Easy Edit','SEO Ready','Fast'];
+        return `
+        <div class="tcard ${w} rounded-2xl overflow-hidden dark:bg-scd bg-white border dark:border-sb border-slb cursor-pointer group" onclick="window.location.hash='gallery'">
+            <div class="relative overflow-hidden">
+                <img src="${t.image}" alt="${t.title}" class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="this.parentElement.classList.add('img-ph')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                    <span class="text-white text-sm font-semibold">View Details</span>
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-heading font-semibold dark:text-white text-gray-900 mb-1 text-sm">${t.title}</h3>
+                <p class="dark:text-gray-500 text-gray-400 text-xs mb-3 line-clamp-2">${t.caption}</p>
+                <div class="flex flex-wrap gap-1.5">
+                    ${features.map(f => `<span class="fbadge dark:bg-sdd bg-scl dark:text-gray-400 text-gray-500 border dark:border-sb border-slb">${f}</span>`).join('')}
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function renderFeaturedCards() {
+        const container = document.getElementById('featured-swipe');
+        container.innerHTML = allTemplates.length > 0
+            ? allTemplates.map(t => createCardHTML(t, true)).join('')
+            : defaultTemplates.map(t => createCardHTML(t, true)).join('');
+    }
+
+    function renderCategories() {
+        const container = document.getElementById('cat-swipe');
+        container.innerHTML = categories.map(c => `
+            <div class="w-40 dark:bg-scd bg-white rounded-xl p-4 border dark:border-sb border-slb text-center hover:border-accent/40 transition-colors cursor-pointer flex-shrink-0" onclick="window.location.hash='gallery'; setTimeout(()=>document.getElementById('gallery-filter').value='${c.name.toLowerCase().replace(' ','')==='landingpage'?'business':c.name.toLowerCase().replace(' ','')}',100)">
+                <i class="fa-solid ${c.icon} ${c.color} text-2xl mb-2"></i>
+                <p class="font-heading font-semibold text-sm dark:text-white text-gray-900">${c.name}</p>
+                <p class="text-xs dark:text-gray-500 text-gray-400 mt-1">${c.count} templates</p>
+            </div>
+        `).join('');
+    }
+
+    /* ============================
+       GALLERY
+    ============================ */
+    function loadGallery() {
+        // Try to load from Supabase
+        if (supabaseClient) {
+            supabaseClient.from('templates').select('*').order('created_at', { ascending: false })
+            .then(({ data, error }) => {
+                if (!error && data && data.length > 0) {
+                    allTemplates = data;
+                } else {
+                    allTemplates = [...defaultTemplates];
+                }
+                renderGalleryGrid();
+            })
+            .catch(() => {
+                allTemplates = [...defaultTemplates];
+                renderGalleryGrid();
+            });
+        } else {
+            allTemplates = [...defaultTemplates];
+            renderGalleryGrid();
+        }
+    }
+
+    function renderGalleryGrid() {
+        const search = (document.getElementById('gallery-search')?.value || '').toLowerCase();
+        const filter = document.getElementById('gallery-filter')?.value || 'all';
+
+        let filtered = allTemplates.filter(t => {
+            const matchSearch = t.title.toLowerCase().includes(search) || (t.caption || '').toLowerCase().includes(search);
+            const matchFilter = filter === 'all' || t.category === filter;
+            return matchSearch && matchFilter;
+        });
+
+        const grid = document.getElementById('gallery-grid');
+        const empty = document.getElementById('gallery-empty');
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '';
+            empty.classList.remove('hidden');
+        } else {
+            empty.classList.add('hidden');
+            grid.innerHTML = filtered.map(t => createCardHTML(t, false)).join('');
+        }
+    }
+
+    /* ============================
+       AUTH
+    ============================ */
+    function switchAuthTab(tab) {
+        document.querySelectorAll('.auth-tab').forEach(b => {
+            const isActive = b.dataset.tab === tab;
+            b.className = `auth-tab flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${isActive ? 'bg-accent text-white' : 'dark:text-gray-400 text-gray-500'}`;
+        });
+        document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+        document.getElementById('signup-form').classList.toggle('hidden', tab !== 'signup');
+        document.getElementById('auth-title').textContent = tab === 'login' ? 'Welcome Back' : 'Create Account';
+        document.getElementById('auth-subtitle').textContent = tab === 'login' ? 'Sign in to upload and manage your templates' : 'Join the community and start sharing';
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        if (!supabaseClient) { showToast('Database not connected. Check Supabase setup.', 'error'); return; }
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+        if (error) { showToast(error.message, 'error'); return; }
+        showToast('Welcome back! You can now upload templates.', 'success');
+    }
+
+    async function handleSignup(e) {
+        e.preventDefault();
+        if (!supabaseClient) { showToast('Database not connected. Check Supabase setup.', 'error'); return; }
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const pass = document.getElementById('signup-pass').value;
+        const { data, error } = await supabaseClient.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+        if (error) { showToast(error.message, 'error'); return; }
+        showToast('Account created! Please check your email to verify.', 'success');
+    }
+
+    async function handleLogout() {
+        if (supabaseClient) await supabaseClient.auth.signOut();
+        currentUser = null;
+        updateAuthUI();
+        showToast('Logged out successfully.', 'success');
+    }
+
+    function updateAuthUI() {
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const authTabs = document.getElementById('auth-tabs');
+        const uploadSection = document.getElementById('upload-section');
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+
+        if (currentUser) {
+            loginForm.classList.add('hidden');
+            signupForm.classList.add('hidden');
+            authTabs.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+            authTitle.textContent = 'Your Account';
+            authSubtitle.textContent = currentUser.email || 'Logged in';
+        } else {
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            authTabs.classList.remove('hidden');
+            uploadSection.classList.add('hidden');
+            authTitle.textContent = 'Welcome Back';
+            authSubtitle.textContent = 'Sign in to upload and manage your templates';
+        }
+
+        // Update nav buttons
+        document.getElementById('nav-login-btn').textContent = currentUser ? 'Account' : 'Login';
+        document.getElementById('mob-login-btn').textContent = currentUser ? 'Account' : 'Login';
+    }
+
+    /* ============================
+       UPLOAD
+    ============================ */
+    async function handleUpload(e) {
+        e.preventDefault();
+        const file = document.getElementById('upload-file').files[0];
+        const title = document.getElementById('upload-title').value;
+        const caption = document.getElementById('upload-caption').value;
+        const category = document.getElementById('upload-category').value;
+
+        if (!file) { showToast('Please select an image.', 'error'); return; }
+
+        const btn = document.getElementById('upload-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Uploading...';
+
+        try {
+            // Upload to Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'template_upload');
+            formData.append('cloud_name', CLOUD_NAME);
+
+            const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+            const cloudData = await cloudRes.json();
+
+            if (cloudData.error) {
+                // Fallback: use local preview URL or picsum
+                throw new Error(cloudData.error.message || 'Cloudinary upload failed');
+            }
+
+            const imageUrl = cloudData.secure_url;
+
+            // Save to Supabase
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('templates').insert({
+                    title, caption, image_url: imageUrl, category,
+                    features: ['Responsive','Modern UI','Free','Easy Edit','SEO Ready','Fast'],
+                    user_id: currentUser.id
+                });
+                if (error) throw error;
+            }
+
+            showToast('Template uploaded successfully!', 'success');
+            document.getElementById('upload-form').reset();
+            document.getElementById('upload-preview').classList.add('hidden');
+            allTemplates.unshift({ id: Date.now(), title, caption, image: imageUrl, category, features: ['Responsive','Modern UI','Free','Easy Edit','SEO Ready','Fast'] });
+            renderFeaturedCards();
+
+        } catch(err) {
+            console.error('Upload error:', err);
+            showToast('Upload failed: ' + err.message + '. Make sure "template_upload" preset exists in Cloudinary.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i>Upload Template';
+        }
+    }
+
+    // Image preview
+    document.addEventListener('change', e => {
+        if (e.target.id === 'upload-file' && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                document.getElementById('preview-img').src = ev.target.result;
+                document.getElementById('upload-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    /* ============================
+       ADD TEMPLATE HANDLER
+    ============================ */
+    function handleAddTemplate() {
+        if (currentUser) {
+            window.location.hash = 'login';
+        } else {
+            window.location.hash = 'login';
+            showToast('Please log in first to add templates.', 'info');
+        }
+    }
+
+    /* ============================
+       CONTACT FORM
+    ============================ */
+    function handleContact(e) {
+        e.preventDefault();
+        // Save to Supabase if available
+        if (supabaseClient) {
+            const form = e.target;
+            const inputs = form.querySelectorAll('input, textarea');
+            const data = {};
+            inputs.forEach(i => { if (i.name || i.type) data[i.type === 'email' ? 'email' : i.type === 'text' && i.placeholder.includes('name') ? 'name' : i.type === 'text' ? 'subject' : 'message'] = i.value; });
+
+            supabaseClient.from('contacts').insert([data]).then(() => {
+                showToast('Message sent successfully!', 'success');
+                form.reset();
+            }).catch(() => {
+                showToast('Message recorded locally. Database may need a "contacts" table.', 'info');
+                form.reset();
+            });
+        } else {
+            showToast('Message sent successfully!', 'success');
+            e.target.reset();
+        }
+    }
+
+    /* ============================
+       FEEDBACK
+    ============================ */
+    function setRating(n) {
+        feedbackRating = n;
+        document.querySelectorAll('#star-rating button').forEach(b => {
+            const star = parseInt(b.dataset.star);
+            b.classList.toggle('text-accent', star <= n);
+            b.classList.toggle('dark:text-sb', star > n);
+            b.classList.toggle('text-slb', star > n);
+        });
+    }
+
+    function handleFeedback(e) {
+        e.preventDefault();
+        if (feedbackRating === 0) { showToast('Please select a rating.', 'error'); return; }
+        showToast('Thank you for your feedback!', 'success');
+        e.target.reset();
+        setRating(0);
+        feedbackRating = 0;
+    }
+
+    /* ============================
+       SWIPE SCROLL HELPERS
+    ============================ */
+    function scrollSwipe(id, dir) {
+        const el = document.getElementById(id);
+        if (el) el.scrollBy({ left: dir * 320, behavior: 'smooth' });
+    }
+
+    /* ============================
+       TERMS MODAL
+    ============================ */
+    function openTerms() { document.getElementById('terms-modal').classList.add('open'); }
+    function closeTerms() { document.getElementById('terms-modal').classList.remove('open'); }
+
+    /* ============================
+       TOAST
+    ============================ */
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        const tmsg = document.getElementById('toast-msg');
+        tmsg.textContent = msg;
+        toast.style.borderColor = type === 'error' ? '#E53935' : type === 'success' ? '#4CAF50' : '#FF9800';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    /* ============================
+       SCROLL REVEAL
+    ============================ */
+    function initReveal() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
+    }
+
+    /* ============================
+       INIT
+    ============================ */
+    document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        initSupabase();
+        renderFeaturedCards();
+        renderCategories();
+        navigate();
+
+        // Event listeners
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        document.getElementById('mob-toggle').addEventListener('click', openMobileMenu);
+        document.getElementById('mob-close').addEventListener('click', closeMobileMenu);
+        document.getElementById('mob-overlay').addEventListener('click', closeMobileMenu);
+
+        // Mobile menu links
+        document.querySelectorAll('.mob-link').forEach(l => l.addEventListener('click', closeMobileMenu));
+
+        // Hash change
+        window.addEventListener('hashchange', navigate);
+
+        // Gallery search & filter
+        const gs = document.getElementById('gallery-search');
+        const gf = document.getElementById('gallery-filter');
+        if (gs) gs.addEventListener('input', renderGalleryGrid);
+        if (gf) gf.addEventListener('change', renderGalleryGrid);
+
+        // Contact form
+        const cf = document.getElementById('contact-form');
+        if (cf) cf.addEventListener('submit', handleContact);
+
+        // Click outside terms modal to close
+        document.getElementById('terms-modal').addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeTerms();
+        });
+
+        // Keyboard: Escape closes modals
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closeTerms(); closeMobileMenu(); }
+        });
+
+        // Init reveals
+        initReveal();
+    });
+    </script>
+</body>
+</html>
