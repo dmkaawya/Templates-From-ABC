@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Templates from ABC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { darkMode: ['class'], theme: { extend: { colors: { primary: '#dc2626', dark: { bg: '#0a0a0a', card: '#141414', border: '#262626', text: '#a3a3a3' }, light: { bg: '#ffffff', card: '#f5f5f5', border: '#e5e5e5', text: '#525252' } } } } }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 6px; }
+    .dark ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    .light ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    .btn-primary { background: #dc2626; color: white; transition: all 0.3s; }
+    .btn-primary:hover { background: #b91c1c; transform: scale(1.03); }
+    .nav-link { position: relative; transition: color 0.3s; }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: #dc2626; transition: width 0.3s; }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+    .mobile-menu { transform: translateX(100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .theme-toggle { position: relative; width: 52px; height: 28px; border-radius: 14px; cursor: pointer; transition: background 0.3s; }
+    .dark .theme-toggle { background: #333; }
+    .light .theme-toggle { background: #dc2626; }
+    .theme-toggle .toggle-dot { position: absolute; top: 3px; width: 22px; height: 22px; border-radius: 50%; transition: all 0.3s; }
+    .dark .toggle-dot { left: 3px; background: #0a0a0a; }
+    .light .toggle-dot { left: 27px; background: white; }
+    .toast { position: fixed; bottom: 30px; right: 30px; padding: 14px 24px; border-radius: 10px; color: white; font-size: 14px; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-info { background: #2563eb; }
+    .stat-card { transition: all 0.3s; }
+    .stat-card:hover { transform: translateY(-4px); }
+  </style>
+</head>
+<body class="dark bg-dark-bg text-white min-h-screen">
+  <!-- Header -->
+  <header class="dark:bg-black/80 light:bg-white/80 backdrop-blur-xl sticky top-0 z-50 border-b dark:border-dark-border light:border-light-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="home.html" class="flex items-center gap-2">
+          <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center"><i class="fas fa-layer-group text-white text-sm"></i></div>
+          <span class="font-bold text-lg tracking-tight dark:text-white light:text-black">Templates<span class="text-primary"> from ABC</span></span>
+        </a>
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="home.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">Home</a>
+          <a href="gallery.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">Gallery</a>
+          <a href="about.html" class="nav-link active text-sm font-medium dark:text-white light:text-black">About</a>
+          <a href="login.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">Login</a>
+        </nav>
+        <div class="flex items-center gap-4">
+          <div class="theme-toggle" onclick="toggleTheme()"><div class="toggle-dot flex items-center justify-center"><i class="dark:text-white light:text-primary text-xs fas fa-moon"></i><i class="light:text-primary dark:hidden text-xs fas fa-sun"></i></div></div>
+          <button onclick="toggleMobileMenu()" class="md:hidden dark:text-white light:text-black text-xl"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+    </div>
+    <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 w-72 h-full dark:bg-dark-card light:bg-white z-50 shadow-2xl p-6 md:hidden">
+      <div class="flex justify-between items-center mb-8"><span class="font-bold text-lg dark:text-white light:text-black">Menu</span><button onclick="toggleMobileMenu()" class="dark:text-white light:text-black text-xl"><i class="fas fa-times"></i></button></div>
+      <nav class="flex flex-col gap-4">
+        <a href="home.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-home mr-3 text-primary"></i>Home</a>
+        <a href="gallery.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-images mr-3 text-primary"></i>Gallery</a>
+        <a href="about.html" class="py-3 px-4 rounded-lg dark:bg-dark-bg light:bg-light-bg dark:text-white light:text-black font-medium text-sm"><i class="fas fa-info-circle mr-3 text-primary"></i>About</a>
+        <a href="login.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-sign-in-alt mr-3 text-primary"></i>Login</a>
+      </nav>
+    </div>
+    <div id="mobileOverlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden" onclick="toggleMobileMenu()"></div>
+  </header>
+
+  <!-- About Content -->
+  <section class="py-16 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border text-xs font-medium dark:text-dark-text light:text-light-text mb-4">
+          <i class="fas fa-heart text-primary"></i> Our Story
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight dark:text-white light:text-black mb-4">About <span class="text-primary">Templates from ABC</span></h1>
+        <p class="text-sm dark:text-dark-text light:text-light-text max-w-2xl mx-auto">We believe everyone deserves access to beautiful, professional templates. That's why we create and share them — for free.</p>
+      </div>
+
+      <!-- Mission / Vision / Values -->
+      <div class="grid md:grid-cols-3 gap-6 mb-16">
+        <div class="p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border stat-card">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4"><i class="fas fa-bullseye text-primary text-lg"></i></div>
+          <h3 class="font-bold text-base dark:text-white light:text-black mb-2">Our Mission</h3>
+          <p class="text-xs dark:text-dark-text light:text-light-text leading-relaxed">To empower creators worldwide with free, high-quality templates that accelerate their projects and bring ideas to life.</p>
+        </div>
+        <div class="p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border stat-card">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4"><i class="fas fa-eye text-primary text-lg"></i></div>
+          <h3 class="font-bold text-base dark:text-white light:text-black mb-2">Our Vision</h3>
+          <p class="text-xs dark:text-dark-text light:text-light-text leading-relaxed">To become the most trusted and comprehensive template resource for designers, developers, and businesses globally.</p>
+        </div>
+        <div class="p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border stat-card">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4"><i class="fas fa-gem text-primary text-lg"></i></div>
+          <h3 class="font-bold text-base dark:text-white light:text-black mb-2">Our Values</h3>
+          <p class="text-xs dark:text-dark-text light:text-light-text leading-relaxed">Quality, accessibility, and community. We believe great design should be available to everyone, regardless of budget.</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-16">
+        <div class="stat-card text-center p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+          <div class="text-3xl font-extrabold text-primary mb-1">150+</div>
+          <div class="text-xs dark:text-dark-text light:text-light-text">Templates</div>
+        </div>
+        <div class="stat-card text-center p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+          <div class="text-3xl font-extrabold text-primary mb-1">10K+</div>
+          <div class="text-xs dark:text-dark-text light:text-light-text">Downloads</div>
+        </div>
+        <div class="stat-card text-center p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+          <div class="text-3xl font-extrabold text-primary mb-1">5K+</div>
+          <div class="text-xs dark:text-dark-text light:text-light-text">Users</div>
+        </div>
+        <div class="stat-card text-center p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+          <div class="text-3xl font-extrabold text-primary mb-1">50+</div>
+          <div class="text-xs dark:text-dark-text light:text-light-text">Categories</div>
+        </div>
+      </div>
+
+      <!-- Team -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-center dark:text-white light:text-black mb-8">Our Team</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div class="text-center p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+            <div class="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden"><img src="https://picsum.photos/seed/team-abc-1/200/200" alt="Team" class="w-full h-full object-cover"></div>
+            <h4 class="font-bold text-sm dark:text-white light:text-black">Alex Johnson</h4>
+            <p class="text-xs text-primary mb-2">Founder & Lead Designer</p>
+            <p class="text-xs dark:text-dark-text light:text-light-text">Passionate about creating beautiful and functional templates.</p>
+          </div>
+          <div class="text-center p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+            <div class="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden"><img src="https://picsum.photos/seed/team-abc-2/200/200" alt="Team" class="w-full h-full object-cover"></div>
+            <h4 class="font-bold text-sm dark:text-white light:text-black">Sarah Chen</h4>
+            <p class="text-xs text-primary mb-2">Full-Stack Developer</p>
+            <p class="text-xs dark:text-dark-text light:text-light-text">Builds clean, responsive templates with modern technologies.</p>
+          </div>
+          <div class="text-center p-6 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+            <div class="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden"><img src="https://picsum.photos/seed/team-abc-3/200/200" alt="Team" class="w-full h-full object-cover"></div>
+            <h4 class="font-bold text-sm dark:text-white light:text-black">Mike Roberts</h4>
+            <p class="text-xs text-primary mb-2">UI/UX Specialist</p>
+            <p class="text-xs dark:text-dark-text light:text-light-text">Ensures every template delivers an exceptional user experience.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="contact.html" class="btn-primary px-8 py-3.5 rounded-xl font-semibold text-sm inline-flex items-center gap-2">
+          <i class="fas fa-paper-plane"></i> Get in Touch
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="dark:bg-black light:bg-gray-50 border-t dark:border-dark-border light:border-light-border pt-14 pb-8 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div>
+          <div class="flex items-center gap-2 mb-4"><div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"><i class="fas fa-layer-group text-white text-xs"></i></div><span class="font-bold text-sm dark:text-white light:text-black">Templates from ABC</span></div>
+          <p class="text-xs dark:text-dark-text light:text-light-text leading-relaxed">Your go-to destination for high-quality, free and premium templates for every project.</p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Quick Links</h4>
+          <ul class="space-y-2.5">
+            <li><a href="home.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Home</a></li>
+            <li><a href="gallery.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Gallery</a></li>
+            <li><a href="about.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">About</a></li>
+            <li><a href="contact.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Contact</a></li>
+            <li><a href="credit.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Credit</a></li>
+            <li><a href="service.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Service</a></li>
+            <li><a href="contact.html#feedback" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Feedback</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Official Links</h4>
+          <ul class="space-y-2.5">
+            <li><a href="https://ictfromabc.com" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fas fa-globe text-primary"></i> ictfromabc.com</a></li>
+            <li><a href="https://youtube.com/@ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-youtube text-primary"></i> YouTube</a></li>
+            <li><a href="https://facebook.com/ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-facebook text-primary"></i> Facebook</a></li>
+            <li><a href="https://tiktok.com/@ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-tiktok text-primary"></i> TikTok</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Terms & Conditions</h4>
+          <ul class="space-y-2.5">
+            <li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Privacy Policy</a></li>
+            <li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Terms of Service</a></li>
+            <li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">License Agreement</a></li>
+            <li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t dark:border-dark-border light:border-light-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-xs dark:text-dark-text light:text-light-text">© 2026 Copyright. All Rights Reserved.</p>
+        <p class="text-xs dark:text-dark-text light:text-light-text">Developed by <a href="https://vezlo-web.vercel.app" target="_blank" class="text-primary font-semibold hover:underline">Vezlo</a></p>
+      </div>
+    </div>
+  </footer>
+  <div id="toast" class="toast"></div>
+  <script>
+    function toggleTheme() { const h=document.documentElement, b=document.body; if(h.getAttribute('data-theme')==='dark'){h.setAttribute('data-theme','light');b.classList.remove('dark','bg-dark-bg','text-white');b.classList.add('light','bg-white','text-black');localStorage.setItem('theme','light');}else{h.setAttribute('data-theme','dark');b.classList.remove('light','bg-white','text-black');b.classList.add('dark','bg-dark-bg','text-white');localStorage.setItem('theme','dark');} }
+    (function(){const s=localStorage.getItem('theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.body.classList.remove('dark','bg-dark-bg','text-white');document.body.classList.add('light','bg-white','text-black');}})();
+    function toggleMobileMenu(){document.getElementById('mobileMenu').classList.toggle('open');document.getElementById('mobileOverlay').classList.toggle('hidden');}
+    function showToast(m,t='info'){const e=document.getElementById('toast');e.textContent=m;e.className='toast toast-'+t+' show';setTimeout(()=>e.classList.remove('show'),3000);}
+  </script>
+</body>
+</html>
