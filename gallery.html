@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery - Templates from ABC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: ['class'],
+      theme: { extend: { colors: { primary: '#dc2626', dark: { bg: '#0a0a0a', card: '#141414', border: '#262626', text: '#a3a3a3' }, light: { bg: '#ffffff', card: '#f5f5f5', border: '#e5e5e5', text: '#525252' } }, fontFamily: { inter: ['Inter', 'sans-serif'] } } }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .dark ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    .light ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-6px); }
+    .dark .card-hover:hover { box-shadow: 0 12px 30px rgba(220,38,38,0.15); }
+    .light .card-hover:hover { box-shadow: 0 12px 30px rgba(220,38,38,0.12); }
+    .btn-primary { background: #dc2626; color: white; transition: all 0.3s; }
+    .btn-primary:hover { background: #b91c1c; transform: scale(1.03); }
+    .btn-outline { border: 1.5px solid #dc2626; color: #dc2626; transition: all 0.3s; }
+    .btn-outline:hover { background: #dc2626; color: white; }
+    .nav-link { position: relative; transition: color 0.3s; }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: #dc2626; transition: width 0.3s; }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+    .mobile-menu { transform: translateX(100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .theme-toggle { position: relative; width: 52px; height: 28px; border-radius: 14px; cursor: pointer; transition: background 0.3s; }
+    .dark .theme-toggle { background: #333; }
+    .light .theme-toggle { background: #dc2626; }
+    .theme-toggle .toggle-dot { position: absolute; top: 3px; width: 22px; height: 22px; border-radius: 50%; transition: all 0.3s; }
+    .dark .toggle-dot { left: 3px; background: #0a0a0a; }
+    .light .toggle-dot { left: 27px; background: white; }
+    .toast { position: fixed; bottom: 30px; right: 30px; padding: 14px 24px; border-radius: 10px; color: white; font-size: 14px; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-success { background: #16a34a; }
+    .toast-error { background: #dc2626; }
+    .toast-info { background: #2563eb; }
+    .filter-btn { transition: all 0.3s; }
+    .filter-btn.active { background: #dc2626; color: white; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+  </style>
+</head>
+<body class="dark bg-dark-bg text-white min-h-screen">
+
+  <!-- Header -->
+  <header class="dark:bg-black/80 light:bg-white/80 backdrop-blur-xl sticky top-0 z-50 border-b dark:border-dark-border light:border-light-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="home.html" class="flex items-center gap-2">
+          <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center"><i class="fas fa-layer-group text-white text-sm"></i></div>
+          <span class="font-bold text-lg tracking-tight dark:text-white light:text-black">Templates<span class="text-primary"> from ABC</span></span>
+        </a>
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="home.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">Home</a>
+          <a href="gallery.html" class="nav-link active text-sm font-medium dark:text-white light:text-black">Gallery</a>
+          <a href="about.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">About</a>
+          <a href="login.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">Login</a>
+        </nav>
+        <div class="flex items-center gap-4">
+          <div class="theme-toggle" onclick="toggleTheme()"><div class="toggle-dot flex items-center justify-center"><i class="dark:text-white light:text-primary text-xs fas fa-moon"></i><i class="light:text-primary dark:hidden text-xs fas fa-sun"></i></div></div>
+          <button onclick="toggleMobileMenu()" class="md:hidden dark:text-white light:text-black text-xl"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+    </div>
+    <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 w-72 h-full dark:bg-dark-card light:bg-white z-50 shadow-2xl p-6 md:hidden">
+      <div class="flex justify-between items-center mb-8"><span class="font-bold text-lg dark:text-white light:text-black">Menu</span><button onclick="toggleMobileMenu()" class="dark:text-white light:text-black text-xl"><i class="fas fa-times"></i></button></div>
+      <nav class="flex flex-col gap-4">
+        <a href="home.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-home mr-3 text-primary"></i>Home</a>
+        <a href="gallery.html" class="py-3 px-4 rounded-lg dark:bg-dark-bg light:bg-light-bg dark:text-white light:text-black font-medium text-sm"><i class="fas fa-images mr-3 text-primary"></i>Gallery</a>
+        <a href="about.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-info-circle mr-3 text-primary"></i>About</a>
+        <a href="login.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-sign-in-alt mr-3 text-primary"></i>Login</a>
+      </nav>
+    </div>
+    <div id="mobileOverlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden" onclick="toggleMobileMenu()"></div>
+  </header>
+
+  <!-- Gallery Content -->
+  <section class="py-10 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10">
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight dark:text-white light:text-black mb-3">Template Gallery</h1>
+        <p class="text-sm dark:text-dark-text light:text-light-text max-w-xl mx-auto">Browse our complete collection of templates. Click on any template to view details.</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap items-center justify-center gap-3 mb-10">
+        <button onclick="filterCards('all')" class="filter-btn active px-5 py-2 rounded-full text-xs font-semibold dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border dark:text-white light:text-black">All</button>
+        <button onclick="filterCards('free')" class="filter-btn px-5 py-2 rounded-full text-xs font-semibold dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border dark:text-white light:text-black">Free</button>
+        <button onclick="filterCards('premium')" class="filter-btn px-5 py-2 rounded-full text-xs font-semibold dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border dark:text-white light:text-black">Premium</button>
+        <button onclick="filterCards('website')" class="filter-btn px-5 py-2 rounded-full text-xs font-semibold dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border dark:text-white light:text-black">Website</button>
+        <button onclick="filterCards('app')" class="filter-btn px-5 py-2 rounded-full text-xs font-semibold dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border dark:text-white light:text-black">App UI</button>
+      </div>
+
+      <!-- Add New Photo Button -->
+      <div class="flex justify-end mb-6">
+        <a href="login.html" class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-xs inline-flex items-center gap-2">
+          <i class="fas fa-plus"></i> Add New Photo
+        </a>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="galleryGrid">
+      </div>
+
+      <!-- Load More -->
+      <div class="text-center mt-10">
+        <button onclick="loadMoreTemplates()" class="btn-outline px-8 py-3 rounded-xl font-semibold text-sm inline-flex items-center gap-2">
+          <i class="fas fa-chevron-down"></i> Load More
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Image Preview Modal -->
+  <div class="modal-overlay" id="imageModal">
+    <div class="relative max-w-3xl w-full dark:bg-dark-card light:bg-white rounded-2xl overflow-hidden">
+      <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-primary transition-colors"><i class="fas fa-times"></i></button>
+      <img id="modalImage" src="" alt="" class="w-full max-h-[60vh] object-cover">
+      <div class="p-6">
+        <h3 id="modalTitle" class="font-bold text-lg dark:text-white light:text-black mb-2"></h3>
+        <p id="modalDesc" class="text-sm dark:text-dark-text light:text-light-text"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="dark:bg-black light:bg-gray-50 border-t dark:border-dark-border light:border-light-border pt-14 pb-8 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div>
+          <div class="flex items-center gap-2 mb-4"><div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"><i class="fas fa-layer-group text-white text-xs"></i></div><span class="font-bold text-sm dark:text-white light:text-black">Templates from ABC</span></div>
+          <p class="text-xs dark:text-dark-text light:text-light-text leading-relaxed">Your go-to destination for high-quality, free and premium templates for every project.</p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Quick Links</h4>
+          <ul class="space-y-2.5">
+            <li><a href="home.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Home</a></li>
+            <li><a href="gallery.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Gallery</a></li>
+            <li><a href="about.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">About</a></li>
+            <li><a href="contact.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Contact</a></li>
+            <li><a href="credit.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Credit</a></li>
+            <li><a href="service.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Service</a></li>
+            <li><a href="contact.html#feedback" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Feedback</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Official Links</h4>
+          <ul class="space-y-2.5">
+            <li><a href="https://ictfromabc.com" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fas fa-globe text-primary"></i> ictfromabc.com</a></li>
+            <li><a href="https://youtube.com/@ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-youtube text-primary"></i> YouTube</a></li>
+            <li><a href="https://facebook.com/ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-facebook text-primary"></i> Facebook</a></li>
+            <li><a href="https://tiktok.com/@ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-tiktok text-primary"></i> TikTok</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Terms & Conditions</h4>
+          <ul class="space-y-2.5">
+            <li><a href="#" onclick="showToast('Terms page coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Privacy Policy</a></li>
+            <li><a href="#" onclick="showToast('Terms page coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Terms of Service</a></li>
+            <li><a href="#" onclick="showToast('Terms page coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">License Agreement</a></li>
+            <li><a href="#" onclick="showToast('Terms page coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t dark:border-dark-border light:border-light-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-xs dark:text-dark-text light:text-light-text">© 2026 Copyright. All Rights Reserved.</p>
+        <p class="text-xs dark:text-dark-text light:text-light-text">Developed by <a href="https://vezlo-web.vercel.app" target="_blank" class="text-primary font-semibold hover:underline">Vezlo</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SUPABASE_URL = 'https://vegemuqhinnyxeojfbxdx.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlZ211cWhpbnl4ZW9qZmJ4ZHgiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3MTIwOTI2MiwiZXhwIjoyMDg2Nzg1MjYyfQ.xj1o2HaGqBBL-YpBLmHHBeUNOtNl20swXQBRp1RgdDk';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const allTemplates = [
+      { id:1, title:'Portfolio Website', desc:'Clean and modern portfolio template perfect for designers and developers.', img:'tpl-abc-1', type:'free', cat:'website' },
+      { id:2, title:'E-Commerce Store', desc:'Full-featured online store template with cart and checkout pages.', img:'tpl-abc-2', type:'free', cat:'website' },
+      { id:3, title:'Dashboard Admin', desc:'Professional admin dashboard with charts, tables, and analytics.', img:'tpl-abc-3', type:'premium', cat:'app' },
+      { id:4, title:'Landing Page', desc:'High-converting landing page template for startups and SaaS.', img:'tpl-abc-4', type:'free', cat:'website' },
+      { id:5, title:'Blog Template', desc:'Elegant blog template with categories, search, and comment system.', img:'tpl-abc-5', type:'premium', cat:'website' },
+      { id:6, title:'Restaurant Website', desc:'Beautiful restaurant template with menu, reservations, and gallery.', img:'tpl-abc-6', type:'free', cat:'website' },
+      { id:7, title:'Fitness App UI', desc:'Mobile-first fitness app interface with workout tracking.', img:'tpl-abc-7', type:'free', cat:'app' },
+      { id:8, title:'Real Estate', desc:'Property listing template with search filters and map view.', img:'tpl-abc-8', type:'premium', cat:'website' },
+      { id:9, title:'Education LMS', desc:'Learning management system template with course pages.', img:'tpl-abc-9', type:'free', cat:'website' },
+      { id:10, title:'Agency Website', desc:'Creative agency template with portfolio showcase and team section.', img:'tpl-abc-10', type:'premium', cat:'website' },
+      { id:11, title:'Travel Booking', desc:'Travel and booking platform with destination guides and itinerary planner.', img:'tpl-travel-11', type:'premium', cat:'website' },
+      { id:12, title:'Chat App UI', desc:'Modern messaging app interface with group chats and media sharing.', img:'tpl-chat-12', type:'free', cat:'app' },
+    ];
+
+    let currentFilter = 'all';
+    let displayCount = 8;
+
+    function renderGallery() {
+      const grid = document.getElementById('galleryGrid');
+      const filtered = currentFilter === 'all' ? allTemplates : allTemplates.filter(t => t.type === currentFilter || t.cat === currentFilter);
+      const toShow = filtered.slice(0, displayCount);
+      grid.innerHTML = toShow.map(t => `
+        <div class="card-hover rounded-2xl overflow-hidden dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border cursor-pointer" data-type="${t.type}" data-cat="${t.cat}" onclick="openModal('${t.img}', '${t.title}', '${t.desc}')">
+          <div class="relative h-48 overflow-hidden">
+            <img src="https://picsum.photos/seed/${t.img}/400/300" alt="${t.title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+            <div class="absolute top-3 right-3 px-2.5 py-1 ${t.type === 'free' ? 'bg-primary text-white' : 'bg-yellow-500 text-black'} text-xs font-semibold rounded-lg">${t.type === 'free' ? 'Free' : 'Premium'}</div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end p-4">
+              <span class="text-white text-xs font-medium"><i class="fas fa-expand mr-1"></i> View Details</span>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-sm dark:text-white light:text-black mb-1">${t.title}</h3>
+            <p class="text-xs dark:text-dark-text light:text-light-text line-clamp-2">${t.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCards(type) {
+      currentFilter = type;
+      displayCount = 8;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      renderGallery();
+    }
+
+    function loadMoreTemplates() {
+      displayCount += 4;
+      renderGallery();
+    }
+
+    function openModal(img, title, desc) {
+      document.getElementById('modalImage').src = `https://picsum.photos/seed/${img}/800/500`;
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalDesc').textContent = desc;
+      document.getElementById('imageModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('imageModal').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('imageModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+    renderGallery();
+
+    // Theme
+    function toggleTheme() {
+      const html = document.documentElement;
+      const body = document.body;
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        body.classList.remove('dark', 'bg-dark-bg', 'text-white');
+        body.classList.add('light', 'bg-white', 'text-black');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        body.classList.remove('light', 'bg-white', 'text-black');
+        body.classList.add('dark', 'bg-dark-bg', 'text-white');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    (function() { const s = localStorage.getItem('theme'); if (s === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.body.classList.remove('dark', 'bg-dark-bg', 'text-white'); document.body.classList.add('light', 'bg-white', 'text-black'); } })();
+    function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('open'); document.getElementById('mobileOverlay').classList.toggle('hidden'); }
+    function showToast(msg, type = 'info') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast toast-' + type + ' show'; setTimeout(() => t.classList.remove('show'), 3000); }
+  </script>
+</body>
+</html>
