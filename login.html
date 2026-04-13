@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Templates from ABC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { darkMode: ['class'], theme: { extend: { colors: { primary: '#dc2626', dark: { bg: '#0a0a0a', card: '#141414', border: '#262626', text: '#a3a3a3' }, light: { bg: '#ffffff', card: '#f5f5f5', border: '#e5e5e5', text: '#525252' } } } } }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 6px; }
+    .dark ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    .light ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    .btn-primary { background: #dc2626; color: white; transition: all 0.3s; }
+    .btn-primary:hover { background: #b91c1c; transform: scale(1.03); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-outline { border: 1.5px solid #dc2626; color: #dc2626; transition: all 0.3s; }
+    .btn-outline:hover { background: #dc2626; color: white; }
+    .nav-link { position: relative; transition: color 0.3s; }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: #dc2626; transition: width 0.3s; }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+    .mobile-menu { transform: translateX(100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .theme-toggle { position: relative; width: 52px; height: 28px; border-radius: 14px; cursor: pointer; transition: background 0.3s; }
+    .dark .theme-toggle { background: #333; }
+    .light .theme-toggle { background: #dc2626; }
+    .theme-toggle .toggle-dot { position: absolute; top: 3px; width: 22px; height: 22px; border-radius: 50%; transition: all 0.3s; }
+    .dark .toggle-dot { left: 3px; background: #0a0a0a; }
+    .light .toggle-dot { left: 27px; background: white; }
+    .toast { position: fixed; bottom: 30px; right: 30px; padding: 14px 24px; border-radius: 10px; color: white; font-size: 14px; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-success { background: #16a34a; }
+    .toast-error { background: #dc2626; }
+    .toast-info { background: #2563eb; }
+    .input-field { width: 100%; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; transition: all 0.3s; }
+    .dark .input-field { background: #0a0a0a; border: 1px solid #262626; color: white; }
+    .light .input-field { background: white; border: 1px solid #e5e5e5; color: black; }
+    .input-field:focus { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+    .dark .input-field::placeholder { color: #525252; }
+    .light .input-field::placeholder { color: #a3a3a3; }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .tab-btn { transition: all 0.3s; }
+    .tab-btn.active { background: #dc2626; color: white; }
+    .upload-zone { border: 2px dashed; transition: all 0.3s; cursor: pointer; }
+    .dark .upload-zone { border-color: #262626; }
+    .light .upload-zone { border-color: #e5e5e5; }
+    .upload-zone:hover { border-color: #dc2626; background: rgba(220,38,38,0.05); }
+  </style>
+</head>
+<body class="dark bg-dark-bg text-white min-h-screen">
+  <!-- Header -->
+  <header class="dark:bg-black/80 light:bg-white/80 backdrop-blur-xl sticky top-0 z-50 border-b dark:border-dark-border light:border-light-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="home.html" class="flex items-center gap-2">
+          <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center"><i class="fas fa-layer-group text-white text-sm"></i></div>
+          <span class="font-bold text-lg tracking-tight dark:text-white light:text-black">Templates<span class="text-primary"> from ABC</span></span>
+        </a>
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="home.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">Home</a>
+          <a href="gallery.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">Gallery</a>
+          <a href="about.html" class="nav-link text-sm font-medium dark:text-dark-text light:text-light-text">About</a>
+          <a href="login.html" class="nav-link active text-sm font-medium dark:text-white light:text-black">Login</a>
+        </nav>
+        <div class="flex items-center gap-4">
+          <div class="theme-toggle" onclick="toggleTheme()"><div class="toggle-dot flex items-center justify-center"><i class="dark:text-white light:text-primary text-xs fas fa-moon"></i><i class="light:text-primary dark:hidden text-xs fas fa-sun"></i></div></div>
+          <button onclick="toggleMobileMenu()" class="md:hidden dark:text-white light:text-black text-xl"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+    </div>
+    <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 w-72 h-full dark:bg-dark-card light:bg-white z-50 shadow-2xl p-6 md:hidden">
+      <div class="flex justify-between items-center mb-8"><span class="font-bold text-lg dark:text-white light:text-black">Menu</span><button onclick="toggleMobileMenu()" class="dark:text-white light:text-black text-xl"><i class="fas fa-times"></i></button></div>
+      <nav class="flex flex-col gap-4">
+        <a href="home.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-home mr-3 text-primary"></i>Home</a>
+        <a href="gallery.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-images mr-3 text-primary"></i>Gallery</a>
+        <a href="about.html" class="py-3 px-4 rounded-lg dark:hover:bg-dark-bg light:hover:bg-light-bg dark:text-dark-text light:text-light-text font-medium text-sm"><i class="fas fa-info-circle mr-3 text-primary"></i>About</a>
+        <a href="login.html" class="py-3 px-4 rounded-lg dark:bg-dark-bg light:bg-light-bg dark:text-white light:text-black font-medium text-sm"><i class="fas fa-sign-in-alt mr-3 text-primary"></i>Login</a>
+      </nav>
+    </div>
+    <div id="mobileOverlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden" onclick="toggleMobileMenu()"></div>
+  </header>
+
+  <!-- Login Content -->
+  <section class="py-12 px-4 min-h-[80vh] flex items-center justify-center">
+    <div class="w-full max-w-md">
+      <!-- Tabs -->
+      <div class="flex mb-8 p-1 rounded-xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+        <button onclick="switchTab('login')" class="tab-btn active flex-1 py-2.5 rounded-lg text-sm font-semibold" id="tabLogin">Login</button>
+        <button onclick="switchTab('register')" class="tab-btn flex-1 py-2.5 rounded-lg text-sm font-semibold dark:text-dark-text light:text-light-text" id="tabRegister">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm" class="p-6 sm:p-8 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+        <div class="text-center mb-6">
+          <div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-user text-white text-xl"></i></div>
+          <h2 class="text-xl font-bold dark:text-white light:text-black">Welcome Back</h2>
+          <p class="text-xs dark:text-dark-text light:text-light-text mt-1">Login to manage your templates</p>
+        </div>
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Email</label>
+            <input type="email" id="loginEmail" class="input-field" placeholder="you@example.com" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Password</label>
+            <div class="relative">
+              <input type="password" id="loginPassword" class="input-field pr-10" placeholder="••••••••" required>
+              <button type="button" onclick="togglePassword('loginPassword', this)" class="absolute right-3 top-1/2 -translate-y-1/2 dark:text-dark-text light:text-light-text hover:text-primary transition-colors"><i class="fas fa-eye text-xs"></i></button>
+            </div>
+          </div>
+          <button type="submit" id="loginBtn" class="btn-primary w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+        </form>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" class="p-6 sm:p-8 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border hidden">
+        <div class="text-center mb-6">
+          <div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-user-plus text-white text-xl"></i></div>
+          <h2 class="text-xl font-bold dark:text-white light:text-black">Create Account</h2>
+          <p class="text-xs dark:text-dark-text light:text-light-text mt-1">Register to upload and manage templates</p>
+        </div>
+        <form onsubmit="handleRegister(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Full Name</label>
+            <input type="text" id="regName" class="input-field" placeholder="John Doe" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Email</label>
+            <input type="email" id="regEmail" class="input-field" placeholder="you@example.com" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Password</label>
+            <div class="relative">
+              <input type="password" id="regPassword" class="input-field pr-10" placeholder="Min 6 characters" required minlength="6">
+              <button type="button" onclick="togglePassword('regPassword', this)" class="absolute right-3 top-1/2 -translate-y-1/2 dark:text-dark-text light:text-light-text hover:text-primary transition-colors"><i class="fas fa-eye text-xs"></i></button>
+            </div>
+          </div>
+          <button type="submit" id="regBtn" class="btn-primary w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+        </form>
+      </div>
+
+      <!-- Upload Section (shown after login) -->
+      <div id="uploadSection" class="hidden mt-6 p-6 sm:p-8 rounded-2xl dark:bg-dark-card light:bg-light-card border dark:border-dark-border light:border-light-border">
+        <div class="text-center mb-6">
+          <div class="w-14 h-14 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-cloud-upload-alt text-white text-xl"></i></div>
+          <h2 class="text-xl font-bold dark:text-white light:text-black">Add New Template</h2>
+          <p class="text-xs dark:text-dark-text light:text-light-text mt-1">Upload your template to the gallery</p>
+        </div>
+        <form onsubmit="handleUpload(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Template Title *</label>
+            <input type="text" id="uploadTitle" class="input-field" placeholder="My Awesome Template" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Short Description *</label>
+            <input type="text" id="uploadDesc" class="input-field" placeholder="Brief description of the template" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Category</label>
+            <select id="uploadCat" class="input-field">
+              <option value="website">Website</option>
+              <option value="app">App UI</option>
+              <option value="presentation">Presentation</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Type</label>
+            <select id="uploadType" class="input-field">
+              <option value="free">Free</option>
+              <option value="premium">Premium</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium dark:text-white light:text-black mb-2">Template Image *</label>
+            <div class="upload-zone rounded-xl p-8 text-center" onclick="document.getElementById('fileInput').click()">
+              <i class="fas fa-cloud-upload-alt text-3xl dark:text-dark-text light:text-light-text mb-3"></i>
+              <p class="text-xs dark:text-dark-text light:text-light-text">Click to upload image</p>
+              <p class="text-xs dark:text-dark-text light:text-light-text mt-1">JPG, PNG, WebP (Max 5MB)</p>
+              <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+            </div>
+            <div id="imagePreview" class="mt-3 hidden">
+              <img id="previewImg" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
+            </div>
+          </div>
+          <button type="submit" id="uploadBtn" class="btn-primary w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-upload"></i> Upload Template
+          </button>
+        </form>
+        <button onclick="handleLogout()" class="w-full mt-4 py-3 rounded-xl font-semibold text-sm dark:text-dark-text light:text-light-text border dark:border-dark-border light:border-light-border hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+
+      <!-- User Info (shown after login) -->
+      <div id="userInfo" class="hidden mt-4 text-center">
+        <p class="text-xs dark:text-dark-text light:text-light-text">Logged in as <span id="userEmail" class="text-primary font-semibold"></span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="dark:bg-black light:bg-gray-50 border-t dark:border-dark-border light:border-light-border pt-14 pb-8 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div><div class="flex items-center gap-2 mb-4"><div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"><i class="fas fa-layer-group text-white text-xs"></i></div><span class="font-bold text-sm dark:text-white light:text-black">Templates from ABC</span></div><p class="text-xs dark:text-dark-text light:text-light-text leading-relaxed">Your go-to destination for high-quality, free and premium templates for every project.</p></div>
+        <div><h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Quick Links</h4><ul class="space-y-2.5"><li><a href="home.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Home</a></li><li><a href="gallery.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Gallery</a></li><li><a href="about.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">About</a></li><li><a href="contact.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Contact</a></li><li><a href="credit.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Credit</a></li><li><a href="service.html" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Service</a></li><li><a href="contact.html#feedback" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Feedback</a></li></ul></div>
+        <div><h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Official Links</h4><ul class="space-y-2.5"><li><a href="https://ictfromabc.com" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fas fa-globe text-primary"></i> ictfromabc.com</a></li><li><a href="https://youtube.com/@ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-youtube text-primary"></i> YouTube</a></li><li><a href="https://facebook.com/ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-facebook text-primary"></i> Facebook</a></li><li><a href="https://tiktok.com/@ictfromabc" target="_blank" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors inline-flex items-center gap-2"><i class="fab fa-tiktok text-primary"></i> TikTok</a></li></ul></div>
+        <div><h4 class="font-semibold text-sm dark:text-white light:text-black mb-4">Terms & Conditions</h4><ul class="space-y-2.5"><li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Privacy Policy</a></li><li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Terms of Service</a></li><li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">License Agreement</a></li><li><a href="#" onclick="showToast('Coming soon!','info');return false;" class="text-xs dark:text-dark-text light:text-light-text hover:text-primary transition-colors">Cookie Policy</a></li></ul></div>
+      </div>
+      <div class="border-t dark:border-dark-border light:border-light-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-xs dark:text-dark-text light:text-light-text">© 2026 Copyright. All Rights Reserved.</p>
+        <p class="text-xs dark:text-dark-text light:text-light-text">Developed by <a href="https://vezlo-web.vercel.app" target="_blank" class="text-primary font-semibold hover:underline">Vezlo</a></p>
+      </div>
+    </div>
+  </footer>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SUPABASE_URL = 'https://vegemuqhinnyxeojfbxdx.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
